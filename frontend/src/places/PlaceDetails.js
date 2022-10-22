@@ -35,29 +35,45 @@ function PlaceDetails() {
 		history.push('/places')
 	}
 
-	async function deleteComment(deletedComment) {
-		await fetch(`http://localhost:5000/places/${place.placeId}/comments/${deletedComment.commentId}`, {
-			method: 'DELETE'
-		})
+	// async function deleteComment(deletedComment) {
+	// 	await fetch(`http://localhost:5000/places/${place.placeId}/comments/${deletedComment.commentId}`, {
+	// 		method: 'DELETE'
+	// 	})
 
-		setPlace({
-			...place,
-			comments: place.comments
-				.filter(comment => comment.commentId !== deletedComment.commentId)
-		})
-	}
+	// 	setPlace({
+	// 		...place,
+	// 		comments: place.comments
+	// 			.filter(comment => comment.commentId !== deletedComment.commentId)
+	// 	})
+	// }
+	  
+
+    async function deleteComment(deletedComment, commentAttributes) {
+        const response = await fetch(`http://localhost:5000/places/${place.placeId}/comments/${deletedComment.commentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify(commentAttributes)
+        })
+    }
+  
+
 
 	async function createComment(commentAttributes) {
 		const response = await fetch(`http://localhost:5000/places/${place.placeId}/comments`, {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${localStorage.getItem('token')}`
+				
 			},
 			body: JSON.stringify(commentAttributes)
 		})
-
+	
 		const comment = await response.json()
-
+	
 		setPlace({
 			...place,
 			comments: [
@@ -65,11 +81,9 @@ function PlaceDetails() {
 				comment
 			]
 		})
-
+	
 	}
-
-
-
+	
 	let comments = (
 		<h3 className="inactive">
 			No comments yet!
